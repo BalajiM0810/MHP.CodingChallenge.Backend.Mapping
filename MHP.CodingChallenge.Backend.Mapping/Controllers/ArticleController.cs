@@ -7,6 +7,7 @@ using MHP.CodingChallenge.Backend.Mapping.Data.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+
 namespace MHP.CodingChallenge.Backend.Mapping.Controllers
 {
     [ApiController]
@@ -26,13 +27,19 @@ namespace MHP.CodingChallenge.Backend.Mapping.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-           return new JsonResult(_articleService.GetAll());
+            List<ArticleDto> articleList = _articleService.GetAll();
+
+            return new JsonResult(articleList);
+
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(long id)
         {
-            return new JsonResult(_articleService.GetById(id));
+            ArticleDto article = _articleService.GetById(id) as ArticleDto;
+            if (article == null)
+                return NotFound();
+            return new JsonResult(article);
         }
 
         [HttpPost]
