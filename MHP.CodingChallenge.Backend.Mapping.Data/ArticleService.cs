@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoMapper;
 using MHP.CodingChallenge.Backend.Mapping.Data.DB;
 using MHP.CodingChallenge.Backend.Mapping.Data.DTO;
 
@@ -8,33 +9,36 @@ namespace MHP.CodingChallenge.Backend.Mapping.Data
     public class ArticleService
     {
         private ArticleRepository _articleRepository;
-        private ArticleMapper _articleMapper;
+        private IMapper _articleMapper;
 
-        public ArticleService(ArticleRepository articleRepository, ArticleMapper articleMapper)
+        public ArticleService(ArticleRepository articleRepository, IMapper mapper)
         {
             _articleRepository = articleRepository;
-            _articleMapper = articleMapper;
+            _articleMapper = mapper;
         }
 
         public List<ArticleDto> GetAll()
         {
             List<Article> articles = _articleRepository.GetAll();
-            // TODO 
-            return new List<ArticleDto>();
+            List<ArticleDto> result = _articleMapper.Map<List<ArticleDto>>(articles);
+            return result;
         }
 
         public object GetById(long id)
         {
             Article article = _articleRepository.FindById(id);
-            // TODO
-            return new ArticleDto();
+            if (article != null)
+            {
+                return _articleMapper.Map<ArticleDto>(article);
+            }
+            return article;
         }
 
         public object Create(ArticleDto articleDto)
         {
-            Article create = _articleMapper.Map(articleDto);
+            Article create = _articleMapper.Map<Article>(articleDto);
             _articleRepository.Create(create);
-            return _articleMapper.Map(create);
+            return _articleMapper.Map<ArticleDto>(create);
         }
     }
 }

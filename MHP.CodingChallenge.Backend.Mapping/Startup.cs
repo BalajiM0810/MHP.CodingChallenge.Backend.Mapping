@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using AutoMapper;
+using Newtonsoft.Json;
 
 namespace MHP.CodingChallenge.Backend.Mapping
 {
@@ -21,20 +23,29 @@ namespace MHP.CodingChallenge.Backend.Mapping
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration
+        {
+            get;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MHP.CodingChallenge.Backend.Mapping", Version = "v1" });
             });
 
             services.AddDataServices();
+
+            var mappingConfiguration = new MapperConfiguration(mc => mc.AddProfile(new ArticleAutoMapper()));
+            IMapper mapper = mappingConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
